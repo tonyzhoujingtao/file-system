@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 import os
 import os.path
 import re
@@ -53,8 +54,10 @@ def rename_files(path, new_name):
         if new_file_name != file_name:
             new_file_path = path.join(path, new_file_name)
 
-            print("Renaming '%s' to '%s'" % (old_file_path, new_file_path))
+            logging.info("Renaming '%s' to '%s'" % (old_file_path, new_file_path))
             os.rename(old_file_path, new_file_path)
+        else:
+            logging.debug("Ignoring '%s'" % old_file_path)
 
 
 if __name__ == '__main__':
