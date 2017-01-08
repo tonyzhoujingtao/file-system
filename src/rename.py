@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import os.path
 import re
 import sys
 
@@ -38,13 +39,13 @@ def main():
 
 def rename_files(path, new_name):
     for file_name in os.listdir(path):
-        old_file_path = os.path.join(path, file_name)
-        if os.path.isdir(old_file_path):
+        old_file_path = path.join(path, file_name)
+        if path.isdir(old_file_path):
             rename_files(old_file_path, new_name)
 
         new_file_name = new_name(file_name)
         if new_file_name != file_name:
-            new_file_path = os.path.join(path, new_file_name)
+            new_file_path = path.join(path, new_file_name)
 
             print("Renaming '%s' to '%s'" % (old_file_path, new_file_path))
             os.rename(old_file_path, new_file_path)
