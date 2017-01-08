@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
+import argparse
 import logging
 import os
 import os.path
 import re
-import sys
 
 
 def main():
-    path = '.' if len(sys.argv) <= 1 else sys.argv[1]
-    rename_files(path, new_name=new_name7)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("path", help="the path to start renaming files recursively")
+    args = parser.parse_args()
+
+    rename_files(args.path, new_name=new_name7)
 
 
 def new_name1(name):
