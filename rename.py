@@ -11,8 +11,8 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("path", help="the path to start renaming files recursively")
-    parser.add_argument("old_pattern", help="the old pattern to be replaced")
-    parser.add_argument("new_pattern", help="the new pattern to be replaced by")
+    parser.add_argument("old_pattern", help="the old pattern to be replaced by")
+    parser.add_argument("new_pattern", help="the new pattern to be replaced with")
     args = parser.parse_args()
 
     # rename_files(args.path, new_name=new_name7)
