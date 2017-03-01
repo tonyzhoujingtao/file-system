@@ -26,6 +26,10 @@ def main():
     f = multi_replace_curry([(args.old_pattern, args.new_pattern)])
     replace_files(args.path, new_string_func=f, dry_run=args.dry_run)
 
+    if args.dry_run:
+        print()
+        logging.info(colored("Please note that the above doesn't happen as it's a dry_run", 'cyan'))
+
 
 def replace_files(directory, new_string_func, dry_run):
     try:
@@ -37,9 +41,9 @@ def replace_files(directory, new_string_func, dry_run):
                 try:
                     replace(file_path, new_string_func, dry_run)
                 except UnicodeDecodeError:
-                    print("Ignoring non 'utf-8' file: %s" % file_name)
+                    logging.warning(colored("Ignoring non 'utf-8' file: %s" % file_name, 'yellow'))
     except FileNotFoundError:
-        print("No such directory: %s" % directory)
+        logging.error(colored("No such directory: %s" % directory, 'yellow'))
 
 
 def replace(file_path, new_string_func, dry_run):
@@ -63,9 +67,9 @@ def make_temp_file(file_path, new_string_func):
                     new_file.write(new_line)
 
                     if new_line != line:
-                        print("%s:%d: %s => %s" % (
-                            file_path, line_number, colored(line.lstrip().rstrip(), 'red'),
-                            colored(new_line.lstrip().rstrip(), 'blue')))
+                        logging.info("%s:%d: %s => %s" % (
+                            file_path, line_number, colored(line.lstrip().rstrip(), 'blue'),
+                            colored(new_line.lstrip().rstrip(), 'green')))
                     line_number += 1
 
         return temp_path
