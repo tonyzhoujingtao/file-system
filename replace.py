@@ -34,34 +34,43 @@ def replace_files(directory, new_string_func, dry_run):
             if os.path.isdir(file_path):
                 replace_files(file_path, new_string_func, dry_run)
             else:
-                temp_path = make_temp_file(file_path, new_string_func)
-                if not dry_run:
-                    os.remove(file_path)
-                    move(temp_path, file_path)
-                else:
-                    os.remove(temp_path)
+                try:
+                    replace(file_path, new_string_func, dry_run)
+                except UnicodeDecodeError:
+                    print("Ignoring non 'utf-8' file: %s" % file_name)
     except FileNotFoundError:
         print("No such directory: %s" % directory)
 
 
+def replace(file_path, new_string_func, dry_run):
+    temp_path = make_temp_file(file_path, new_string_func)
+    if not dry_run:
+        os.remove(file_path)
+        move(temp_path, file_path)
+    else:
+        os.remove(temp_path)
+
+
 def make_temp_file(file_path, new_string_func):
-    fh, temp_path = mkstemp()
+    try:
+        fh, temp_path = mkstemp()
 
-    with open(temp_path, 'w') as new_file:
-        with open(file_path) as old_file:
-            line_number = 1
-            for line in old_file:
-                new_line = new_string_func(line)
-                new_file.write(new_line)
+        with open(temp_path, 'w') as new_file:
+            with open(file_path) as old_file:
+                line_number = 1
+                for line in old_file:
+                    new_line = new_string_func(line)
+                    new_file.write(new_line)
 
-                if new_line != line:
-                    print("%s:%d: %s => %s" % (
-                        file_path, line_number, colored(line.lstrip().rstrip(), 'red'),
-                        colored(new_line.lstrip().rstrip(), 'blue')))
-                line_number += 1
+                    if new_line != line:
+                        print("%s:%d: %s => %s" % (
+                            file_path, line_number, colored(line.lstrip().rstrip(), 'red'),
+                            colored(new_line.lstrip().rstrip(), 'blue')))
+                    line_number += 1
 
-    os.close(fh)
-    return temp_path
+        return temp_path
+    finally:
+        os.close(fh)
 
 
 if __name__ == '__main__':
