@@ -2,3 +2,4 @@
 .pydevproject
 *.iml
 .idea/
+__pycache__/

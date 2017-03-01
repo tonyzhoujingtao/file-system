@@ -12,7 +12,7 @@ from strings import multi_replace_curry
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     parser = argparse.ArgumentParser(
         description='Replace old pattern with new pattern in all files in path recursively')
@@ -31,6 +31,13 @@ def main():
         logging.info(colored("Please note that the above doesn't happen as it's a dry_run", 'cyan'))
 
 
+def replaceable(file_path, new_string_func):
+    with open(file_path, 'r') as file:
+        old_string = file.read()
+        new_string = new_string_func(old_string)
+        return old_string != new_string
+
+
 def replace_files(directory, new_string_func, dry_run):
     try:
         for file_name in os.listdir(directory):
@@ -39,7 +46,10 @@ def replace_files(directory, new_string_func, dry_run):
                 replace_files(file_path, new_string_func, dry_run)
             else:
                 try:
-                    replace(file_path, new_string_func, dry_run)
+                    if replaceable(file_path, new_string_func):
+                        replace(file_path, new_string_func, dry_run)
+                    else:
+                        logging.debug("Skipping %s" % file_path)
                 except UnicodeDecodeError:
                     logging.warning(colored("Ignoring non 'utf-8' file: %s" % file_name, 'yellow'))
     except FileNotFoundError:
@@ -60,7 +70,7 @@ def make_temp_file(file_path, new_string_func):
         fh, temp_path = mkstemp()
 
         with open(temp_path, 'w') as new_file:
-            with open(file_path) as old_file:
+            with open(file_path, 'r') as old_file:
                 line_number = 1
                 for line in old_file:
                     new_line = new_string_func(line)
