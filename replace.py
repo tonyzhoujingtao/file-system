@@ -19,22 +19,27 @@ def main():
     parser.add_argument("path", help="the path to start recursively")
     parser.add_argument("old_pattern", help="the old pattern to be replaced by")
     parser.add_argument("new_pattern", help="the new pattern to be replaced with")
+    parser.add_argument('--dry_run', action='store_true', help="show what would happen without doing it")
+
     args = parser.parse_args()
 
     f = multi_replace_curry([(args.old_pattern, args.new_pattern)])
-    replace_files(args.path, new_string_func=f)
+    replace_files(args.path, new_string_func=f, dry_run=args.dry_run)
 
 
-def replace_files(directory, new_string_func):
+def replace_files(directory, new_string_func, dry_run):
     try:
         for file_name in os.listdir(directory):
             file_path = os.path.join(directory, file_name)
             if os.path.isdir(file_path):
-                replace_files(file_path, new_string_func)
+                replace_files(file_path, new_string_func, dry_run)
             else:
                 temp_path = make_temp_file(file_path, new_string_func)
-                os.remove(file_path)
-                move(temp_path, file_path)
+                if not dry_run:
+                    os.remove(file_path)
+                    move(temp_path, file_path)
+                else:
+                    os.remove(temp_path)
     except FileNotFoundError:
         print("No such directory: %s" % directory)
 
