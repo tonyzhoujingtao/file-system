@@ -9,7 +9,7 @@ import re
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='Rename in all files in path recursively')
     parser.add_argument("path", help="the path to start renaming files recursively")
     parser.add_argument("old_pattern", help="the old pattern to be replaced by")
     parser.add_argument("new_pattern", help="the new pattern to be replaced with")
