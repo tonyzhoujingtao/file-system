@@ -5,6 +5,8 @@ import os
 import os.path
 import re
 
+from strings import multi_replace_curry
+
 
 def main():
     logging.basicConfig(level=logging.INFO)
@@ -18,16 +20,6 @@ def main():
     # rename_files(args.path, new_name=new_name7)
     f = multi_replace_curry([(args.old_pattern, args.new_pattern)])
     rename_files(args.path, new_name_func=f)
-
-
-def multi_replace_curry(replacements):
-    def multi_replace(name):
-        new_name = name
-        for old, new in replacements:
-            new_name = new_name.replace(old, new)
-        return new_name
-
-    return multi_replace
 
 
 def new_name1(name):
