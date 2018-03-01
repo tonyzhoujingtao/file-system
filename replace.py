@@ -12,7 +12,7 @@ from strings import multi_replace_curry
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
     parser = argparse.ArgumentParser(
         description='Replace old pattern with new pattern in all files in path recursively')
@@ -32,10 +32,13 @@ def main():
 
 
 def replaceable(file_path, new_string_func):
-    with open(file_path, 'r') as file:
-        old_string = file.read()
-        new_string = new_string_func(old_string)
-        return old_string != new_string
+    try:
+        with open(file_path, 'r') as file:
+            old_string = file.read()
+            new_string = new_string_func(old_string)
+            return old_string != new_string
+    except OSError as e:
+        logging.error(colored("%s" % e, 'yellow'))
 
 
 def replace_files(directory, new_string_func, dry_run):
@@ -51,7 +54,7 @@ def replace_files(directory, new_string_func, dry_run):
                     else:
                         logging.debug("Skipping %s" % file_path)
                 except UnicodeDecodeError:
-                    logging.warning(colored("Ignoring non 'utf-8' file: %s" % file_name, 'yellow'))
+                    logging.debug(colored("Ignoring non 'utf-8' file: %s" % file_name, 'yellow'))
     except FileNotFoundError:
         logging.error(colored("No such directory: %s" % directory, 'yellow'))
 
